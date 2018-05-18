@@ -1,27 +1,20 @@
 package sd.Browser_launch;
 
 import base.Browser_setup;
-import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
-import cucumber.api.java.en.When;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.By;
-import org.openqa.selenium.os.WindowsUtils;
 
 import java.io.*;
 import java.net.MalformedURLException;
 import java.util.ResourceBundle;
-
 
 public class FirstWeb_sd extends Browser_setup {
 
@@ -34,12 +27,10 @@ public class FirstWeb_sd extends Browser_setup {
 
     }
 
-
     @Given("^User goto First URL of application$")
     public void userGotoFirstURLOfApplication() {
         driver.get(launch.getString("Firsturl"));
         System.out.println("URL of application launched is: " + launch.getString("Firsturl"));
-
     }
 
     @And("^read data from file$")
@@ -63,46 +54,44 @@ public class FirstWeb_sd extends Browser_setup {
         Sheet sh = wb.getSheet("Sheet1");//Read sheet inside the workbook by its name
         int rowCount = sh.getLastRowNum() - sh.getFirstRowNum();  //Find number of rows in excel file
         System.out.println("Number of Rows in File = " + rowCount);
-        for (int i = 0; i < rowCount + 1; i++) {  //Create a loop over all the rows of excel file to read it
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("Java Books");
+        for (int i = 0; i < rowCount; i++) {  //Create a loop over all the rows of excel file to read it
 
             Row row = sh.getRow(i);
+
             for (int j = 0; j < 1; j++) { //row.getLastCellNum() Create a loop to print cell values in a row
-                System.out.print(row.getCell(j).getStringCellValue() + "|| ");
+                System.out.print("Current Domain:->  " + row.getCell(j).getStringCellValue() + " Extracted data is : ");
                 driver.findElement(By.cssSelector(eleHome.getString("searchTextBox_css"))).clear();//Clear search textBox
                 driver.findElement(By.cssSelector(eleHome.getString("searchTextBox_css"))).sendKeys(row.getCell(j).getStringCellValue()); //Enter data fron excel to search textBox
-                //driver.findElement(By.cssSelector(eleHome.getString("jsonRadionBtn_css"))).click();//Choose data Format
-                //driver.findElement(By.cssSelector(eleHome.getString("searchBtn_css"))).click();//Click at Search button
-                Thread.sleep(4000);//Wait for process
+                driver.findElement(By.cssSelector(eleHome.getString("jsonRadionBtn_css"))).click();//Choose data Format
+                driver.findElement(By.cssSelector(eleHome.getString("searchBtn_css"))).click();//Click at Search button
+                Thread.sleep(7000);//Wait for process
                 String data = driver.findElement(By.cssSelector(eleHome.getString("tabelData_css"))).getText();//extract data
-                System.out.println("Extracted data is: "+data);
-                //Start Writing data in file here
-                FileOutputStream fos = new FileOutputStream("D:/Output.xls");
-                HSSFWorkbook wbw = new HSSFWorkbook();
-                HSSFSheet shw = wbw.createSheet("Results");
-                Row rw = sh.createRow(i);
-                Cell c1 = rw.createCell(j);
-                c1.setCellValue(data);
+                System.out.println("Extracted data is: " + data);
+                //Write Excel
+                //Create blank workbook
 
+                int rowCountw = 1;
+//                for (int n=0;n<rowCount+1;n++) {
+                    Row roww = sheet.createRow(i);
+                    int columnCount = 1;
+//                    for (int k=0;k<1;k++) {
+                        Cell cell = roww.createCell(j);
+                        cell.setCellValue(data);
+//                    }
+//                }
 
-            //Print excel data in console
-               /* switch (row.getCell(j).getCellType()) {
+            }
 
-                    case Cell.CELL_TYPE_STRING:
-                        System.out.print(row.getCell(j).getStringCellValue() + "|| ");
-
-                        break;
-
-                    case Cell.CELL_TYPE_NUMERIC:
-                        System.out.print(row.getCell(j).getNumericCellValue() + "|| ");
-                        break;
-                    // System.out.print(row.getCell(j).getStringCellValue()+"|| ");
-                }*/
-
+            }
+            try (FileOutputStream outputStream = new FileOutputStream("JavaBooks.xlsx")) {
+                workbook.write(outputStream);
         }
         System.out.println("Execution Finished");
-       // WindowsUtils.tryToKillByName("soffice.bin");
 
 
     }
-}}
+}
+
 
