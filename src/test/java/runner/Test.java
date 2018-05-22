@@ -6,7 +6,7 @@ import cucumber.api.CucumberOptions;
 
 
 //@RunWith(Cucumber.class)
-@CucumberOptions(features = {"src/test/java/Feature Files/Firstwebsite.feature"}, glue = {"sd"},
+@CucumberOptions(features = {"src/test/java/Feature Files/bulkwhois.feature"}, glue = {"sd"},
         format = {"json:target/cucumber.json", "html:/target/site/cucumber-pretty"},
         plugin = {"pretty",
                 "html:target/site/cucumber-pretty",

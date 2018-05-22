@@ -191,6 +191,12 @@
         <!-- https://mvnrepository.com/artifact/org.monte/monte-screen-recorder -->
         <!-- https://mvnrepository.com/artifact/org.monte/monte-screen-recorder -->
 
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20160810</version>
+        </dependency>
 
 
     </dependencies>

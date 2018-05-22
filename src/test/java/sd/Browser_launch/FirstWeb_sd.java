@@ -10,7 +10,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.JSONObject;
 import org.openqa.selenium.By;
+
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -67,11 +69,20 @@ public class FirstWeb_sd extends Browser_setup {
                 driver.findElement(By.cssSelector(eleHome.getString("jsonRadionBtn_css"))).click();//Choose data Format
                 driver.findElement(By.cssSelector(eleHome.getString("searchBtn_css"))).click();//Click at Search button
                 Thread.sleep(7000);//Wait for process
+               // String data = driver.findElement(By.cssSelector(eleHome.getString("tabelData_css"))).getText();//extract data
                 String data = driver.findElement(By.cssSelector(eleHome.getString("tabelData_css"))).getText();//extract data
                 System.out.println("Extracted data is: " + data);
                 //Write Excel
                 //Create blank workbook
+                /*FileWriter fr=new FileWriter("d:\\data"+i+".json");
+                BufferedWriter br=new BufferedWriter(fr);
+                JSONObject obj = new JSONObject(data);
+                obj.write(data);
+                br.write(data);
 
+                br.newLine();
+                fr.flush();
+                fr.close();*/
                 int rowCountw = 1;
 //                for (int n=0;n<rowCount+1;n++) {
                     Row roww = sheet.createRow(i);
