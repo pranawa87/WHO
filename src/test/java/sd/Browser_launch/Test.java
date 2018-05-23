@@ -1,66 +1,111 @@
 /*@author: Pranawa Mishra, Date: 18-05-2018*/
 package sd.Browser_launch;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.JSONObject;
+import java.io.FileReader;
+import java.lang.reflect.Array;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.lang.reflect.Type;
+
+import com.google.common.base.Equivalence;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.*;
+import org.testng.collections.Lists;
 
 import java.io.*;
 
 public class Test {
 
-    public static void main(String[] args) throws IOException {
-        String path = "D:";
-        String filename = "JavaBooks.xlsx";
-        File file = new File(path + "\\" + filename);
-        FileInputStream inputStream = new FileInputStream(file);//Create an object of FileInputStream class to read excel file
-        Workbook wb = null;
-        String fileExtensionName = filename.substring(filename.indexOf("."));//Find the file extension by spliting file name in substring and getting only extension name
-        if (fileExtensionName.equals(".xlsx")) //If it is xlsx file then create object of XSSFWorkbook class
-        {
-            XSSFWorkbook workbook = new XSSFWorkbook();
-            wb = new XSSFWorkbook(inputStream);
-        } else if (fileExtensionName.equals(".xls"))//Check condition if the file is xls file
-        {
-            wb = new HSSFWorkbook(inputStream);//If it is xls file then create object of HSSFWorkbook class
+    public static void main(String[] args) throws IOException, ParseException {
 
+        deseri();
+
+    }
+
+    public static void deseri() throws IOException, ParseException {
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+
+        try (FileReader reader = new FileReader("d:\\data.json")) {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+
+            JSONArray employeeList = (JSONArray) obj;
+            // System.out.println(employeeList);
+
+            //Iterate over employee array
+            employeeList.forEach(emp -> {
+                try {
+                    parseEmployeeObject((JSONObject) emp);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            });
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void parseEmployeeObject(JSONObject employee) throws ParseException {
+        //Get employee object within list
+        JSONObject employeeObject = (JSONObject) employee.get("output");
+        registrant_contact(employeeObject);
+        admincontact(employeeObject);
+        technical_contact(employeeObject);
+
+        //Get employee first name
+        //String firstName = (String) employeeObject.get("updated_on");
+        //	//System.out.println(firstName);
+        //	System.out.println(employeeObject);
+
+    }
+
+
+    public static void registrant_contact(JSONObject employeeObject) throws ParseException {
+        JSONObject employeeObject1 = (JSONObject) employeeObject.get("registrant_contact");
+        //System.out.println("all: -" + employeeObject1);
+        String registrant = (String) employeeObject1.get("email");
+        System.out.println("registrant's Email : " + registrant);
+
+        try {
+            FileWriter fstream = new FileWriter("d:\\emails\\Registrant.txt", true);
+            BufferedWriter out = new BufferedWriter(fstream);
+            out.write(registrant + ",");
+            out.newLine();
+            out.close();
+        }
+        catch (Exception e) {
+
+            System.err.println("Error while writing to file: " + e.getMessage());
         }
 
-        Sheet sh = wb.getSheet("Java Books");//Read sheet inside the workbook by its name
-        int rowCount = sh.getLastRowNum() - sh.getFirstRowNum();  //Find number of rows in excel file
-        System.out.println("Number of Rows in File = " + rowCount);
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("Java Books");
-        for (int i = 0; i <= rowCount; i++) {  //Create a loop over all the rows of excel file to read it
+    }
 
-            Row row = sh.getRow(i);
+    public static void admincontact(JSONObject employeeObject) throws ParseException {
+        JSONObject employeeObject1 = (JSONObject) employeeObject.get("admin_contact");
+        //System.out.println("all: -" + employeeObject1);
+        String admin_email = (String) employeeObject1.get("email");
+        System.out.println("Admin email: " + admin_email);
+    }
 
-
-            for (int j = 0; j < 1; j++) {
-                String data = row.getCell(j).getStringCellValue();
-
-                System.out.print("Current JSON Data  " + row.getCell(j).getStringCellValue());
-               /* try {
-                    FileWriter fstream = new FileWriter("d:\\data.json", true);
-                    BufferedWriter out = new BufferedWriter(fstream);
-                    out.write(data + ",");
-                    out.newLine();
-                    out.close();
-                } catch (Exception e) {
-                    System.err.println("Error while writing to file: " +
-                            e.getMessage());
-                }*/
-
-
-            }
-
+        public static void technical_contact (JSONObject employeeObject) throws ParseException {
+            JSONObject employeeObject1 = (JSONObject) employeeObject.get("technical_contact");
+            //System.out.println("all: -" + employeeObject1);
+            String technical_contact = (String) employeeObject1.get("email");
+            System.out.println("Technical contact's email is: "+technical_contact);
 
         }
     }
 
-}
+
